@@ -10,8 +10,19 @@ function handleAddPlaceClick() {
   document.querySelector('.card-popup').classList.add('popup_opened');
 }
 
-export function PopupWithForm(props) {
+export function ImagePopup() {
+  return(
+    <div className="popup image-popup">
+      <div className="image-popup__container">
+        <button className="image-popup__close-button popup__close-button" name="close" type="button"></button>
+        <img className="image-popup__image" src="#" alt="" />
+        <p className="image-popup__description"></p>
+      </div>
+    </div>
+  )
+}
 
+export function PopupWithForm(props) {
   return(
     <div className={`popup ${props.name}-popup `}   >
       <div className={`popup__container ${props.name}-popup__container`}>
@@ -26,17 +37,7 @@ export function PopupWithForm(props) {
   )
 }
 
-function ImagePopup() {
-  return(
-    <div className="popup image-popup">
-      <div className="image-popup__container">
-        <button className="image-popup__close-button popup__close-button" name="close" type="button"></button>
-        <img className="image-popup__image" src="#" alt="" />
-        <p className="image-popup__description"></p>
-      </div>
-    </div>
-  )
-}
+
 
 function Main() {
   return(
