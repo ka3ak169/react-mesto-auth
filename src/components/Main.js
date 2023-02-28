@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from '../utils/api';
 
-export function ImagePopup() {
+export function ImagePopup({ card, onClose }) {
   return(
-    <div className="popup image-popup">
+    <div className={`popup image-popup ${card ? `popup_opened` : ``}`}>
       <div className="image-popup__container">
-        <button className="image-popup__close-button popup__close-button" name="close" type="button"></button>
-        <img className="image-popup__image" src="#" alt="" />
+        <button onClick={onClose} className="image-popup__close-button popup__close-button" name="close" type="button"></button>
+        <img className="image-popup__image" src={card.src} alt={card.name} />
         <p className="image-popup__description"></p>
       </div>
     </div>
@@ -28,19 +28,56 @@ export function PopupWithForm({ name, text, btnText, children, isOpen, onClose }
   )
 }
 
-function Main({ onEditAvatar, onEditProfile, onAddPlace }) {
-  const [userName, setUserName] = React.useState('');
-  const [userDescription, setUserDescription] = React.useState('');
-  const [userAvatar, setUserAvatar] = React.useState('');
+function Card({name, src, likes, handleClick}) {
+
+  return(
+      <div className="card__element">
+        <img className="card__image" alt={name} src={src} onClick={() => handleClick({src, name})} />
+        <div className="card__group">
+          <h2 className="card__place">{name}</h2>
+          <div className="card__like-box">
+            <button className="card__like" type="button"></button>
+            <p className="card__like-counter">{likes}</p>
+          </div>
+        </div>
+        <button className="card__trash" type="button"></button>
+      </div>
+  )
+}
+
+function Main({ onEditAvatar, onEditProfile, onAddPlace, onCardClick }) {
+  const [userName, setUserName] = useState('');
+  const [userDescription, setUserDescription] = useState('');
+  const [userAvatar, setUserAvatar] = useState('');
+  const [cards, setCards] = useState([]);
 
   useEffect(() => {
-    api.getUserInformation().then((data) => {
+    api.getUserInformation()
+    .then((data) => {
       {
         setUserName(data.name);
         setUserDescription(data.about);
         setUserAvatar(data.avatar);
       }
-    });
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+  }, []);
+
+  useEffect(() => {
+    api.getInitialCards()
+    .then((data) => {      
+        setCards(data.map((item) => ({
+          id: item._id,
+          src: item.link,
+          name: item.name,
+          likes: item.likes.length
+        })));      
+    })
+    .catch((error) => {
+      console.log(error)
+    })
   }, []);
 
   return(
@@ -67,6 +104,9 @@ function Main({ onEditAvatar, onEditProfile, onAddPlace }) {
         ></button>
       </section>
       <section className="cards">
+        {
+          cards.map(({id, ...props}) => <Card key={id} {...props} handleClick={onCardClick}/>)
+        }
       </section>
     </main>
   );

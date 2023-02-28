@@ -92,4 +92,3 @@ headers: {
 }})
 
 export default api;
-console.log(api);

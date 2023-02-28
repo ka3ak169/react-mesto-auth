@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './Header';
 import Main from './Main';
 import Footer from './Footer';
@@ -6,7 +6,7 @@ import {
   PopupWithForm,
   ImagePopup
  } from './Main';
-import { useState } from 'react';
+
 
 
 
@@ -14,11 +14,13 @@ function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
+  const [selectedCard, setSelectedCard] = useState(false);
 
   function closeAllPopups() {
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
     setIsEditAvatarPopupOpen(false);
+    setSelectedCard(false)
   }
 
   function handleEditProfileClick() {
@@ -33,7 +35,9 @@ function App() {
     setIsEditAvatarPopupOpen(true)
   }
 
-
+  function handleCardClick(src, name) {
+    setSelectedCard(src, name);
+  }
 
   return (
     <body className="page">
@@ -41,7 +45,8 @@ function App() {
       <Main
         onEditProfile={handleEditProfileClick}
         onAddPlace={handleAddPlaceClick}
-        onEditAvatar={handleEditAvatarClick}     
+        onEditAvatar={handleEditAvatarClick}
+        onCardClick={handleCardClick}
       />
       <Footer />
       <PopupWithForm
@@ -94,21 +99,11 @@ function App() {
           <span className="error avatar-popup-input-error"></span>
         </fieldset>        
       </PopupWithForm>
-      <ImagePopup />
-      {/* card template */}
-      <template className="card-template">
-        <div className="card__element">
-          <img className="card__image" alt="" src="#" />
-          <div className="card__group">
-            <h2 className="card__place"></h2>
-            <div className="card__like-box">
-              <button className="card__like" type="button"></button>
-              <p className="card__like-counter">777</p>
-            </div>
-          </div>
-          <button className="card__trash" type="button"></button>
-        </div>
-      </template>
+      <ImagePopup 
+      card={selectedCard}
+      onClose={closeAllPopups}      
+      />
+
     </body>
   );
 }
