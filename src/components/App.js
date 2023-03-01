@@ -36,7 +36,7 @@ function App() {
   }
 
   return (
-    <body className="page">
+    <div className="page">
       <Header />
       <Main
         onEditProfile={handleEditProfileClick}
@@ -54,10 +54,10 @@ function App() {
       >         
         <fieldset className="popup__field">
           <input className="popup__form-input profile-popup-name" id="profile-name-input" type="text" name="name" 
-            placeholder="Имя" minlength="2" maxlength="40" defaultValue='' required />
+            placeholder="Имя" minLength="2" maxLength="40" defaultValue='' required />
           <span className="error profile-name-input-error"></span>
           <input className="popup__form-input profile-popup-activity" id="profile-activity-input" type="text"
-            name="about"  placeholder="Вид деятельности" minlength="2" maxlength="200" defaultValue='' required />
+            name="about"  placeholder="Вид деятельности" minLength="2" maxLength="200" defaultValue='' required />
           <span className="error profile-activity-input-error"></span>
         </fieldset>        
       </PopupWithForm>
@@ -70,7 +70,7 @@ function App() {
       >       
         <fieldset className="popup__field">
           <input type="text" className="popup__form-input card-popup-name" id="card-name-input" name="name" 
-            placeholder="Название" minlength="2" maxlength="30" defaultValue='' required />
+            placeholder="Название" minLength="2" maxLength="30" defaultValue='' required />
           <span className="error card-name-input-error"></span>
           <input type="url" className="popup__form-input card-popup-activity" id="card-activity-input" name="link"
              placeholder="Ссылка на картинку" defaultValue='' required />
@@ -100,7 +100,7 @@ function App() {
       onClose={closeAllPopups}      
       />
 
-    </body>
+    </div>
   );
 }
 
