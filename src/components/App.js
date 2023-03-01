@@ -2,25 +2,21 @@ import React, { useState, useEffect } from 'react';
 import Header from './Header';
 import Main from './Main';
 import Footer from './Footer';
-import { 
-  PopupWithForm,
-  ImagePopup
- } from './Main';
-
-
+import ImagePopup from './ImagePopup';
+import PopupWithForm from './PopupWithForm';
 
 
 function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
-  const [selectedCard, setSelectedCard] = useState(false);
+  const [selectedCard, setSelectedCard] = useState({name: '', src: ''});
 
   function closeAllPopups() {
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
     setIsEditAvatarPopupOpen(false);
-    setSelectedCard(false)
+    setSelectedCard({name: '', src: ''})
   }
 
   function handleEditProfileClick() {

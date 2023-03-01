@@ -1,49 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../utils/api';
-
-export function ImagePopup({ card, onClose }) {
-  return(
-    <div className={`popup image-popup ${card ? `popup_opened` : ``}`}>
-      <div className="image-popup__container">
-        <button onClick={onClose} className="image-popup__close-button popup__close-button" name="close" type="button"></button>
-        <img className="image-popup__image" src={card.src} alt={card.name} />
-        <p className="image-popup__description"></p>
-      </div>
-    </div>
-  )
-}
-
-export function PopupWithForm({ name, text, btnText, children, isOpen, onClose }) {
-  return(
-    <div className={`popup ${name}-popup ${isOpen ? `popup_opened` : ``}`}>
-      <div className={`popup__container ${name}-popup__container`}>
-        <h2 className="popup__heading">{text}</h2>
-        <button onClick={onClose} className={`popup__close-button`} name="close" type="button"></button>
-        <form className={`popup__form`} name={name} noValidate>
-          {children}
-          <button className="submit-button" type="submit" name={`${name}-submit`}>{btnText}</button>
-        </form>
-      </div>
-    </div>
-  )
-}
-
-function Card({name, src, likes, handleClick}) {
-
-  return(
-      <div className="card__element">
-        <img className="card__image" alt={name} src={src} onClick={() => handleClick({src, name})} />
-        <div className="card__group">
-          <h2 className="card__place">{name}</h2>
-          <div className="card__like-box">
-            <button className="card__like" type="button"></button>
-            <p className="card__like-counter">{likes}</p>
-          </div>
-        </div>
-        <button className="card__trash" type="button"></button>
-      </div>
-  )
-}
+import Card from './Card';
 
 function Main({ onEditAvatar, onEditProfile, onAddPlace, onCardClick }) {
   const [userName, setUserName] = useState('');
