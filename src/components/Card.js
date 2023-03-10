@@ -1,6 +1,8 @@
 import React from "react"
+import { CurrentUserContext } from "../contexts/CurrentUserContext"
 
 export default function Card({name, src, likes, handleClick}) {
+  
   return(
       <div className="card__element">
         <img className="card__image" alt={name} src={src} onClick={() => handleClick({src, name})} />
