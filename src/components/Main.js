@@ -3,7 +3,7 @@ import api from '../utils/api';
 import Card from './Card';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
-function Main({ onEditAvatar, onEditProfile, onAddPlace, onCardClick }) {
+function Main({ onEditAvatar, onEditProfile, onAddPlace, onCardClick, onCardLike }) {
   const [cards, setCards] = useState([]);
   const userContext = useContext(CurrentUserContext);
 
@@ -12,15 +12,19 @@ function Main({ onEditAvatar, onEditProfile, onAddPlace, onCardClick }) {
     .then((data) => {      
         setCards(data.map((item) => ({
           id: item._id,
+          card: item,
           src: item.link,
           name: item.name,
-          likes: item.likes.length
+          likes: item.likes,
+          owner: item.owner._id          
         })));      
     })
     .catch((error) => {
       console.log(error)
     })
   }, []);
+  
+  // console.log(onCardClick);
 
   return(
     <main className="content">
@@ -47,7 +51,14 @@ function Main({ onEditAvatar, onEditProfile, onAddPlace, onCardClick }) {
       </section>
       <section className="cards">
         {
-          cards.map(({id, ...props}) => <Card key={id} {...props} handleClick={onCardClick}/>)
+          cards.map(({id, ...props}) => 
+          <Card 
+            key={id} 
+            {...props} 
+            onCardClick={onCardClick}       
+            onCardLike={onCardLike}                     
+            // onCardDelete={handleCardDelete} 
+          />)        
         }
       </section>
     </main>

@@ -14,6 +14,7 @@ function App() {
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState({name: '', src: ''});
   const [currentUser, setCurrentUser] = useState({});
+  const [cards, setCards] = useState([]);
 
   useEffect(() => {
     api.getUserInformation()
@@ -26,6 +27,23 @@ function App() {
       console.log(error)
     })
   }, []);
+
+  useEffect(() => {
+    api.getInitialCards()
+    .then((data) => {      
+        setCards(data.map((item) => ({
+          id: item._id,
+          card: item,
+          src: item.link,
+          name: item.name,
+          likes: item.likes,
+          owner: item.owner._id          
+        })));      
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+  }, [setCards]);
 
   function closeAllPopups() {
     setIsEditProfilePopupOpen(false);
@@ -46,10 +64,32 @@ function App() {
     setIsEditAvatarPopupOpen(true)
   }
 
-  function handleCardClick(src, name) {
+  const handleCardClick = (src, name) => {
     setSelectedCard(src, name);
   }
 
+  const handleCardLike = (card) => {
+    const isLiked = card.likes.some(i => i._id === currentUser._id);
+
+    if (isLiked) {
+      api.deleteLike(card._id)
+      .then(data => {
+          setCards((state) => state.map((c) => c._id === card._id ? data : c));
+        })
+      .catch((error) => {
+        console.log(error);
+      })
+    } else {
+      api.addLike(card._id)
+      .then(data => {
+        setCards((state) => state.map((c) => c._id === card._id ? data : c));
+    })
+      .catch((error) => {
+        console.log(error);
+      })
+    }
+  }
+ 
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
@@ -59,6 +99,8 @@ function App() {
           onAddPlace={handleAddPlaceClick}
           onEditAvatar={handleEditAvatarClick}
           onCardClick={handleCardClick}
+          onCardLike={handleCardLike}
+          cards={cards}
         />
         <Footer />
         <PopupWithForm
