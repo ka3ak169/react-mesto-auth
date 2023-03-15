@@ -9,22 +9,20 @@ export default function Card({card, name, src, likes, owner, onCardClick, onCard
   const cardLikeButtonClassName = ( 
     `card__like ${isLiked && 'card__like_active'}` 
   );
-  
-  function handleLikeClick() {
+
+  console.log(card);
+
+  const handleLikeClick = (card) => {
     onCardLike(card)
   }
-
-  function handleClick() {
-    onCardClick(src, name)
-  }
-
+  
   return(
       <div className="card__element">
-        <img className="card__image" alt={name} src={src} onClick={handleClick} />
+        <img className="card__image" alt={name} src={src} onClick={() => onCardClick(card)} />
         <div className="card__group">
           <h2 className="card__place">{name}</h2>
           <div className="card__like-box">
-            <button className={cardLikeButtonClassName} onClick={handleLikeClick} type="button"></button>
+            <button className={cardLikeButtonClassName} onClick={() => handleLikeClick(card)} type="button"></button>
             <p className="card__like-counter">{likes.length}</p>
           </div>
         </div>

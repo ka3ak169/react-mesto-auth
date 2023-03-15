@@ -12,7 +12,7 @@ function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
-  const [selectedCard, setSelectedCard] = useState({name: '', src: ''});
+  const [selectedCard, setSelectedCard] = useState({});
   const [currentUser, setCurrentUser] = useState({});
   const [cards, setCards] = useState([]);
 
@@ -43,7 +43,7 @@ function App() {
     .catch((error) => {
       console.log(error)
     })
-  }, [setCards]);
+  }, []);
 
   function closeAllPopups() {
     setIsEditProfilePopupOpen(false);
@@ -89,6 +89,8 @@ function App() {
       })
     }
   }
+
+  // console.log(handleCardLike);
  
   return (
     <CurrentUserContext.Provider value={currentUser}>
@@ -157,7 +159,6 @@ function App() {
         card={selectedCard}
         onClose={closeAllPopups}      
         />
-
       </div>
     </CurrentUserContext.Provider>
   );
