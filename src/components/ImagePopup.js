@@ -1,7 +1,7 @@
 import React from "react"
 
 export default function ImagePopup({ card, onClose }) {
-  console.log(card);
+  // console.log(card);
   return(
     <div className={`popup image-popup ${card.link ? `popup_opened` : ``}`}>
       <div className="image-popup__container">
