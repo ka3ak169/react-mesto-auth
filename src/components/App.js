@@ -15,25 +15,20 @@ function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
-  const [selectedCard, setSelectedCard] = useState({});
+  const [selectedCard, setSelectedCard] = useState({ name: "", src: "" });
   const [cards, setCards] = useState([]);
 
-  useEffect(() => {
-    api
-      .getUserInformation()
-      .then((data) => {
-        setCurrentUser(data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, []);
+  // User information
+  const getUserInfo = api.getUserInformation();
 
-  useEffect(() => {
-    api
-      .getInitialCards()
-      .then((data) => {
-        setCards(data.map((item) => item));
+  // Initial Cards
+  const getCards = api.getInitialCards();
+
+    useEffect(() => {
+      Promise.all([getUserInfo, getCards])
+      .then(([userData, cards]) => {
+        setCurrentUser(userData);
+        setCards(cards.map((item) => item));
       })
       .catch((error) => {
         console.log(error);
@@ -59,8 +54,8 @@ function App() {
     setIsEditAvatarPopupOpen(true);
   }
 
-  const handleCardClick = (src, name) => {
-    setSelectedCard(src, name);
+  const handleCardClick = (data) => {
+    setSelectedCard(data);
   };
 
   const handleCardLike = (card) => {
