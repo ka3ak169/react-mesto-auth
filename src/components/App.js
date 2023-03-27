@@ -143,7 +143,7 @@ function App() {
         <Header />
         <Routes>
           <Route path="/sign-up" element={<Register/>} />
-          <Route path="/sign-in" element={<Register/>} />
+          <Route path="/sign-in" element={<Login/>} />
 
           <Route
             path="/"

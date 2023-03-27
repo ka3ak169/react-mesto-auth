@@ -8,7 +8,7 @@ function Header(){
     if (url.pathname === "/sign-in") {
       return <div className="header__link">
       {/* <Link to={'sign-up'} style={{color: '#fff', textDecorationLine: 'none'}}>email@mail.com</Link> */}
-      <Link to={'sign-up'} style={{color: '#fff', textDecorationLine: 'none', marginLeft: '24px'}}>Выйти</Link>
+      <Link to={'sign-up'} style={{color: '#fff', textDecorationLine: 'none', marginLeft: '24px'}}>Регистрация</Link>
       </div>;
     }
     if (url.pathname === "/sign-up") {
@@ -20,7 +20,7 @@ function Header(){
     if (url.pathname === "/") {
       return <div className="header__link">
       <Link to={'sign-up'} style={{color: '#fff', textDecorationLine: 'none'}}>email@mail.com</Link>
-      <Link to={'sign-up'} style={{color: '#fff', textDecorationLine: 'none', marginLeft: '24px', color: '#A9A9A9'}}>Ркгистрация</Link>
+      <Link to={'sign-up'} style={{color: '#fff', textDecorationLine: 'none', marginLeft: '24px', color: '#A9A9A9'}}>Выйти</Link>
       </div>;
     }
   };
