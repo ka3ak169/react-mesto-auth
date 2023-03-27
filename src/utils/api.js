@@ -1,5 +1,3 @@
-import { configApi } from "./utils"; 
-
 class Api {
   constructor({ url, headers }) {
     this._url = url;
