@@ -7,14 +7,12 @@ function Header(){
   const links = () => {
     if (url.pathname === "/sign-in") {
       return <div className="header__link">
-      {/* <Link to={'sign-up'} style={{color: '#fff', textDecorationLine: 'none'}}>email@mail.com</Link> */}
-      <Link to={'sign-up'} style={{color: '#fff', textDecorationLine: 'none', marginLeft: '24px'}}>Регистрация</Link>
+      <Link to={'/sign-up'} style={{color: '#fff', textDecorationLine: 'none', marginLeft: '24px'}}>Регистрация</Link>
       </div>;
     }
     if (url.pathname === "/sign-up") {
       return <div className="header__link">
-      {/* <Link to={'sign-up'} style={{color: '#fff', textDecorationLine: 'none'}}>email@mail.com</Link> */}
-      <Link to={'sign-up'} style={{color: '#fff', textDecorationLine: 'none', marginLeft: '24px'}}>Войти</Link>
+      <Link to={'/sign-in'} style={{color: '#fff', textDecorationLine: 'none', marginLeft: '24px'}}>Войти</Link>
       </div>;
     }
     if (url.pathname === "/") {

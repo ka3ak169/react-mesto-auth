@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Route, Routes, Navigate } from "react-router-dom";
+import { Route, Routes, Navigate, useLocation } from "react-router-dom";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
@@ -14,6 +14,9 @@ import Register from "./Register";
 import Login from "./Login";
 import InfoTooltip from "./InfoTooltip";
 import ProtectedRoute from "./ProtectedRoute";
+import { register } from "./Auth";
+
+
 
 function App() {
   const [currentUser, setCurrentUser] = useState({});
@@ -22,24 +25,29 @@ function App() {
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState({ name: "", src: "" });
   const [cards, setCards] = useState([]);
-  const [loggedIn, setLoggedIn] = useState(false)
+  const [loggedIn, setLoggedIn] = useState(false);
+  const url = useLocation();
 
-  // User information
-  const getUserInfo = api.getUserInformation();
+  useEffect(() => {
+    if (url.pathname === "/") {
+      async function fetchData() {
+        try {
+          const [userData, cards] = await Promise.all([
+            api.getUserInformation(),
+            api.getInitialCards(),
+          ]);
+          setCurrentUser(userData);
+          setCards(cards.map((item) => item));
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      fetchData();
+    }
+  }, [loggedIn]);
 
-  // Initial Cards
-  const getCards = api.getInitialCards();
 
-    useEffect(() => {
-      Promise.all([getUserInfo, getCards])
-      .then(([userData, cards]) => {
-        setCurrentUser(userData);
-        setCards(cards.map((item) => item));
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, []);
+
 
   const closeAllPopups = () => {
     setIsEditProfilePopupOpen(false);
@@ -139,32 +147,27 @@ function App() {
       });
   };
 
+
+
+  // register('test777dvfbghm@examplcvbe.corm', 'password222')
+  // .then((result) => {
+  //   console.log(result);
+  // })
+  // .catch((error) => {
+  //   console.log(error);
+  // });
+
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
         <Header />
         <Routes>
-          <Route path="/sign-up" element={<Register />} />
-          <Route path="/sign-in" element={<Login />} />
-          {/* <ProtectedRoute
-            path="/"
-            loggedIn={loggedIn}
-            component={
-              <Main
-                onEditProfile={handleEditProfileClick}
-                onAddPlace={handleAddPlaceClick}
-                onEditAvatar={handleEditAvatarClick}
-                onCardClick={handleCardClick}
-                onCardLike={handleCardLike}
-                onCardDelete={handleCardDelete}
-                cards={cards}
-              />
-            }
-          /> */}
-
+          <Route path="/sign-up" element={<Register loggedIn={loggedIn}/>} />
+          <Route path="/sign-in" element={<Login setLoggedIn={setLoggedIn} loggedIn={loggedIn}/>} />
           <Route
             path="/"
-            element={<ProtectedRoute loggedIn={!loggedIn} element={Main} onEditProfile={handleEditProfileClick}
+            element={<ProtectedRoute loggedIn={loggedIn} element={Main} 
+            onEditProfile={handleEditProfileClick}
             onAddPlace={handleAddPlaceClick}
             onEditAvatar={handleEditAvatarClick}
             onCardClick={handleCardClick}
@@ -172,22 +175,7 @@ function App() {
             onCardDelete={handleCardDelete}
             cards={cards}/>}
           />
-          {/* <Route
-            path="/"
-            element={
-              <Main
-                onEditProfile={handleEditProfileClick}
-                onAddPlace={handleAddPlaceClick}
-                onEditAvatar={handleEditAvatarClick}
-                onCardClick={handleCardClick}
-                onCardLike={handleCardLike}
-                onCardDelete={handleCardDelete}
-                cards={cards}
-              />
-            }
-          /> */}
         </Routes>
-
         <Footer />
         <EditProfilePopup
           isOpen={isEditProfilePopupOpen}

@@ -1,13 +1,25 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 
-function Login(){
+function Login({setLoggedIn, loggedIn}){
+  const navigate = useNavigate();
+  console.log(setLoggedIn);
+  console.log(loggedIn);
+
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setLoggedIn(true);
+
+    navigate('/');
+    // здесь обработчик регистрации
+  }
 
   return (
     <div className='entry-form'>
       <h2 className='entry-form__heading'>Вход</h2>
-      <form>
+      <form onSubmit={handleSubmit}>
         <fieldset className='entry-form__field'>
           <input
             className="entry-form__form-input"
@@ -23,7 +35,7 @@ function Login(){
           <input
             className="entry-form__form-input"
             id="entry-form-password-input"
-            type="email"
+            type="password"
             name="password"
             placeholder="Пароль"
             minLength="2"
