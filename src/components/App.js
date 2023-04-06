@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Route, Routes, Navigate, useLocation } from "react-router-dom";
+import {
+  Route,
+  Routes,
+  useNavigate,
+} from "react-router-dom";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
@@ -14,46 +18,45 @@ import Register from "./Register";
 import Login from "./Login";
 import InfoTooltip from "./InfoTooltip";
 import ProtectedRoute from "./ProtectedRoute";
-import { register } from "./Auth";
-
-
+import { register, authorization, authorize } from "./Auth";
 
 function App() {
   const [currentUser, setCurrentUser] = useState({});
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
+  const [isInfoTooltipPopupOpen, setIsInfoTooltipPopupOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState({ name: "", src: "" });
+  const [formValue, setFormValue] = useState({ email: "", password: "" });
+  const [userEmail, setUserEmail] = useState("");
   const [cards, setCards] = useState([]);
   const [loggedIn, setLoggedIn] = useState(false);
-  const url = useLocation();
+  const [registration, setRegistration] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (url.pathname === "/") {
-      async function fetchData() {
-        try {
-          const [userData, cards] = await Promise.all([
-            api.getUserInformation(),
-            api.getInitialCards(),
-          ]);
-          setCurrentUser(userData);
-          setCards(cards.map((item) => item));
-        } catch (error) {
-          console.log(error);
-        }
+    async function fetchData() {
+      try {
+        tokenCheck();
+        const [userData, cards] = await Promise.all([
+          api.getUserInformation(),
+          api.getInitialCards(),
+        ]);
+        setCurrentUser(userData);
+        setCards(cards.map((item) => item));
+      } catch (error) {
+        console.log(error);
       }
-      fetchData();
     }
-  }, [loggedIn]);
-
-
-
+    fetchData();
+  }, []);
 
   const closeAllPopups = () => {
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
     setIsEditAvatarPopupOpen(false);
     setSelectedCard({ name: "", src: "" });
+    setIsInfoTooltipPopupOpen(false);
   };
 
   function handleEditProfileClick() {
@@ -147,33 +150,113 @@ function App() {
       });
   };
 
+  const handleRegisterSubmit = (email, password) => {
+    console.log(email, password);
+    register(email, password)
+      .then((result) => {
+        console.log(result);
+        setRegistration(true);
+        setIsInfoTooltipPopupOpen(true);
+        setFormValue({ email: "", password: "" });
+        setTimeout(() => {
+          navigate("/sign-in");
+          closeAllPopups();
+        }, 2000);
+      })
+      .catch((error) => {
+        console.log(error);
+        setRegistration(false);
+        setIsInfoTooltipPopupOpen(true);
+        setFormValue({ email: "", password: "" });
+        setTimeout(() => {
+          closeAllPopups();
+        }, 2000);
+      });
+  };
 
+  const handleLoginSubmit = (email, password) => {
+    authorization(email, password)
+      .then((result) => {
+        console.log(result);
+        localStorage.setItem("token", JSON.stringify({ result }));
+        setLoggedIn(true);
+        tokenCheck();
+        navigate("/");
+      })
+      .catch((error) => {
+        console.log(error);
+        setIsInfoTooltipPopupOpen(true);
+        setFormValue({ email: "", password: "" });
+        setTimeout(() => {
+          closeAllPopups();
+        }, 2000);
+      });
+  };
 
-  // register('test777dvfbghm@examplcvbe.corm', 'password222')
-  // .then((result) => {
-  //   console.log(result);
-  // })
-  // .catch((error) => {
-  //   console.log(error);
-  // });
+  const tokenCheck = () => {
+    const storedToken = localStorage.getItem("token");
+    if (storedToken) {
+      const token = JSON.parse(storedToken).result;
+      authorize(token)
+        .then((result) => {
+          if (result !== null && result.data !== null) {
+            setUserEmail(result.data.email);
+            setLoggedIn(true);
+            navigate("/");
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setFormValue({ email: "", password: "" });
+    navigate("/sign-in");
+  };
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
-        <Header />
+        <Header userEmail={userEmail} onLogout={handleLogout} />
         <Routes>
-          <Route path="/sign-up" element={<Register loggedIn={loggedIn}/>} />
-          <Route path="/sign-in" element={<Login setLoggedIn={setLoggedIn} loggedIn={loggedIn}/>} />
           <Route
             path="/"
-            element={<ProtectedRoute loggedIn={loggedIn} element={Main} 
-            onEditProfile={handleEditProfileClick}
-            onAddPlace={handleAddPlaceClick}
-            onEditAvatar={handleEditAvatarClick}
-            onCardClick={handleCardClick}
-            onCardLike={handleCardLike}
-            onCardDelete={handleCardDelete}
-            cards={cards}/>}
+            element={
+              <ProtectedRoute
+                loggedIn={loggedIn}
+                element={Main}
+                onEditProfile={handleEditProfileClick}
+                onAddPlace={handleAddPlaceClick}
+                onEditAvatar={handleEditAvatarClick}
+                onCardClick={handleCardClick}
+                onCardLike={handleCardLike}
+                onCardDelete={handleCardDelete}
+                cards={cards}
+              />
+            }
+          />
+          <Route
+            path="/sign-in"
+            element={
+              <Login
+                formValue={formValue}
+                setFormValue={setFormValue}
+                onSubmit={handleLoginSubmit}
+              />
+            }
+          />
+          <Route
+            path="/sign-up"
+            element={
+              <Register
+                formValue={formValue}
+                setFormValue={setFormValue}
+                onSubmit={handleRegisterSubmit}
+              />
+            }
           />
         </Routes>
         <Footer />
@@ -198,7 +281,11 @@ function App() {
           onUpdateAvatar={handleUpdateAvatar}
         />
         <ImagePopup card={selectedCard} onClose={closeAllPopups} />
-        <InfoTooltip />
+        <InfoTooltip
+          registration={registration}
+          isOpen={isInfoTooltipPopupOpen}
+          onClose={closeAllPopups}
+        />
       </div>
     </CurrentUserContext.Provider>
   );
