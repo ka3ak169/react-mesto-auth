@@ -2,62 +2,16 @@ import React from "react";
 import { useLocation, Link } from "react-router-dom";
 import logo from "../images/VectorlogoW.svg";
 
-function Header({ userEmail, onLogout }) {
+function Header({ userEmail, onLogout, text, way, loggedIn }) {
   const url = useLocation();
+
   const links = () => {
-    if (url.pathname === "/sign-in") {
       return (
         <div className="header__link">
-          <Link
-            to={"/sign-up"}
-            style={{
-              color: "#fff",
-              textDecorationLine: "none",
-              marginLeft: "24px",
-            }}
-          >
-            Регистрация
-          </Link>
+          <Link to={"/"} style={{ color: "#fff", textDecorationLine: "none" }}>{userEmail ? `${userEmail}` : ''}</Link>
+          <Link to={way} onClick={onLogout} style={{textDecorationLine: "none", marginLeft: "24px",  color: loggedIn ? "#A9A9A9" : "#fff"}}>{text}</Link>
         </div>
       );
-    }
-    if (url.pathname === "/sign-up") {
-      return (
-        <div className="header__link">
-          <Link
-            to={"/sign-in"}
-            style={{
-              color: "#fff",
-              textDecorationLine: "none",
-              marginLeft: "24px",
-            }}
-          >
-            Войти
-          </Link>
-        </div>
-      );
-    }
-    if (url.pathname === "/") {
-      return (
-        <div className="header__link">
-          <Link
-            to={"/"}
-            style={{ color: "#fff", textDecorationLine: "none" }}
-          >{`${userEmail}`}</Link>
-          <Link
-            to={"sign-in"}
-            onClick={onLogout}
-            style={{
-              textDecorationLine: "none",
-              marginLeft: "24px",
-              color: "#A9A9A9",
-            }}
-          >
-            Выйти
-          </Link>
-        </div>
-      );
-    }
   };
   return (
     <header className="header">

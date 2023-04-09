@@ -1,11 +1,11 @@
 @import url(./vendor/normalize.css);
+@import url(./blocks/html.css);
 @import url(./vendor/fonts.css);
 @import url(./blocks/page/page.css);
 @import url(./blocks/error/error.css);
 @import url(./blocks/submit-button/submit-button.css);
 @import url(./blocks/submit-button/_type/submit-button_invalid.css);
 @import url(./blocks/popup/__form-input/popup__form-input.css);
-
 
 /* block header */
 @import url(./blocks/header/header.css);

@@ -18,7 +18,7 @@ import Register from "./Register";
 import Login from "./Login";
 import InfoTooltip from "./InfoTooltip";
 import ProtectedRoute from "./ProtectedRoute";
-import { register, authorization, authorize } from "./Auth";
+import { register, authorization, authorize } from "../utils/Auth";
 
 function App() {
   const [currentUser, setCurrentUser] = useState({});
@@ -38,18 +38,20 @@ function App() {
     async function fetchData() {
       try {
         tokenCheck();
-        const [userData, cards] = await Promise.all([
+        if (loggedIn) {
+          const [userData, cards] = await Promise.all([
           api.getUserInformation(),
           api.getInitialCards(),
         ]);
         setCurrentUser(userData);
         setCards(cards.map((item) => item));
+        }        
       } catch (error) {
         console.log(error);
       }
     }
     fetchData();
-  }, []);
+  }, [loggedIn]);
 
   const closeAllPopups = () => {
     setIsEditProfilePopupOpen(false);
@@ -151,7 +153,6 @@ function App() {
   };
 
   const handleRegisterSubmit = (email, password) => {
-    console.log(email, password);
     register(email, password)
       .then((result) => {
         console.log(result);
@@ -177,16 +178,16 @@ function App() {
   const handleLoginSubmit = (email, password) => {
     authorization(email, password)
       .then((result) => {
-        console.log(result);
         localStorage.setItem("token", JSON.stringify({ result }));
         setLoggedIn(true);
-        tokenCheck();
+        setUserEmail(email);
         navigate("/");
       })
       .catch((error) => {
         console.log(error);
         setIsInfoTooltipPopupOpen(true);
         setFormValue({ email: "", password: "" });
+        setRegistration(false);
         setTimeout(() => {
           closeAllPopups();
         }, 2000);
@@ -200,6 +201,7 @@ function App() {
       authorize(token)
         .then((result) => {
           if (result !== null && result.data !== null) {
+            console.log(result.data.email);
             setUserEmail(result.data.email);
             setLoggedIn(true);
             navigate("/");
@@ -220,42 +222,66 @@ function App() {
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
-        <Header userEmail={userEmail} onLogout={handleLogout} />
         <Routes>
           <Route
             path="/"
             element={
-              <ProtectedRoute
-                loggedIn={loggedIn}
-                element={Main}
-                onEditProfile={handleEditProfileClick}
-                onAddPlace={handleAddPlaceClick}
-                onEditAvatar={handleEditAvatarClick}
-                onCardClick={handleCardClick}
-                onCardLike={handleCardLike}
-                onCardDelete={handleCardDelete}
-                cards={cards}
-              />
+              <>
+                <Header
+                  userEmail={userEmail}
+                  onLogout={handleLogout}
+                  text={"Выйти"}
+                  way={"/sign-in"}
+                  loggedIn={loggedIn}
+                />
+                <ProtectedRoute
+                  loggedIn={loggedIn}
+                  element={Main}
+                  onEditProfile={handleEditProfileClick}
+                  onAddPlace={handleAddPlaceClick}
+                  onEditAvatar={handleEditAvatarClick}
+                  onCardClick={handleCardClick}
+                  onCardLike={handleCardLike}
+                  onCardDelete={handleCardDelete}
+                  cards={cards}
+                />
+              </>
             }
           />
           <Route
             path="/sign-in"
             element={
-              <Login
-                formValue={formValue}
-                setFormValue={setFormValue}
-                onSubmit={handleLoginSubmit}
-              />
+              <>
+                <Header
+                  onLogout={handleLogout}
+                  text={"Регистрация"}
+                  way={"/sign-up"}
+                  loggedIn={loggedIn}
+                />
+                <Login
+                  formValue={formValue}
+                  setFormValue={setFormValue}
+                  onSubmit={handleLoginSubmit}
+                />
+              </>
             }
           />
           <Route
             path="/sign-up"
             element={
-              <Register
-                formValue={formValue}
-                setFormValue={setFormValue}
-                onSubmit={handleRegisterSubmit}
-              />
+              <>
+                <Header
+                  onLogout={handleLogout}
+                  text={"Войти"}
+                  way={"/sign-in"}
+                  loggedIn={loggedIn}
+                />
+                <Register
+                  formValue={formValue}
+                  setFormValue={setFormValue}
+                  onSubmit={handleRegisterSubmit}
+                />
+              </>
             }
           />
         </Routes>
