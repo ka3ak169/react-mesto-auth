@@ -201,7 +201,7 @@ function App() {
       authorize(token)
         .then((result) => {
           if (result !== null && result.data !== null) {
-            console.log(result.data.email);
+            // console.log(result.data.email);
             setUserEmail(result.data.email);
             setLoggedIn(true);
             navigate("/");
