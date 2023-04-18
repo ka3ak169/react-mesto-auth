@@ -9,7 +9,11 @@ export default function PopupWithForm({
   onClose,
   onSubmit,
   isValid
-}) {
+}) 
+
+{
+// console.log(onSubmit);
+
   return (
     <div className={`popup ${name}-popup ${isOpen ? `popup_opened` : ``}`}>
       <div className={`popup__container ${name}-popup__container`}>
@@ -28,6 +32,7 @@ export default function PopupWithForm({
           {children}
           <button
             className={`submit-button ${isValid ? '' : 'submit-button_invalid' }`}
+            // className={`submit-button `}
             type="submit"
             name={`${name}-submit`}
           >

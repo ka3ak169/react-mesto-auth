@@ -1,30 +1,28 @@
 import React, { useEffect, useState } from "react";
 import PopupWithForm from "./PopupWithForm";
+import { useForm } from "react-hook-form";
 
 export default function AddPlacePopup({ isOpen, onClose, onAddPlace }) {
-  const [name, setName] = useState();
-  const [link, setLink] = useState();
+  const [errorMessage, setErrorMessage] = useState();
+  const { register, handleSubmit, reset, formState: { errors, isValid, isValidating } } = useForm({mode: 'onBlur'});
 
   useEffect(() => {
-    setName("");
-    setLink("");
+    setErrorMessage('');
+    reset();
   }, [isOpen]);
 
+    const onSubmit = (data) => {
+      // console.log(JSON.stringify(data));
+      onAddPlace( data );
+      reset();      
+  };
+
   const handleChange = (e) => {
-    const inputName = e.target.name;
-    if (inputName === "name") {
-      setName(e.target.value);
-    }
-    if (inputName === "link") {
-      setLink(e.target.value);
-    }
+    setErrorMessage(e.target.validationMessage);
+    // console.log(isValid);
+    console.log(isValidating);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    onAddPlace({ name, link });
-  };
 
   return (
     <PopupWithForm
@@ -33,33 +31,38 @@ export default function AddPlacePopup({ isOpen, onClose, onAddPlace }) {
       btnText={`Создать`}
       isOpen={isOpen}
       onClose={onClose}
-      onSubmit={handleSubmit}
+      onSubmit={handleSubmit(onSubmit)}
+      isValid={isValid}
     >
       <fieldset className="popup__field">
         <input
-          type="text"
+          onInput={handleChange}
           className="popup__form-input card-popup-name"
-          id="card-name-input"
-          name="name"
           placeholder="Название"
-          minLength="2"
-          maxLength="30"
-          value={name ?? ""}
-          onChange={handleChange}
-          required
+          {...register('name', 
+          {required: 'Поле обязательно для заполнения', 
+           minLength: {
+            value: 2,
+            message: 'Не менее 2-x символов'
+           }, 
+           maxLength: {
+            value: 30,
+            message: 'Не более 30 символов'
+           }           
+          }) }
         />
-        <span className="error card-name-input-error"></span>
+        <span className="error card-name-input-error">{errors?.name && errors?.name?.message || ""}</span>
         <input
           type="url"
+          onInput={handleChange}
           className="popup__form-input card-popup-activity"
-          id="card-activity-input"
-          name="link"
           placeholder="Ссылка на картинку"
-          value={link ?? ""}
-          onChange={handleChange}
-          required
+          {...register('link', 
+          {
+            required: 'Поле обязательно для заполнения',                     
+          })}
         />
-        <span className="error card-activity-input-error"></span>
+        <span className="error card-activity-input-error">{errors?.link?.message ? errors?.link?.message : errorMessage || ""}</span>
       </fieldset>
     </PopupWithForm>
   );
