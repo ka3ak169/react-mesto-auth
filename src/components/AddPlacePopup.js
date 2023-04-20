@@ -4,7 +4,8 @@ import { useForm } from "react-hook-form";
 
 export default function AddPlacePopup({ isOpen, onClose, onAddPlace }) {
   const [errorMessage, setErrorMessage] = useState();
-  const { register, handleSubmit, reset, formState: { errors, isValid, isValidating } } = useForm({mode: 'onBlur'});
+  const { register, handleSubmit, reset, formState: { errors, isValid } } = useForm({mode: 'onBlur'});
+  const [urlValid, setUrlValid] = useState(true)
 
   useEffect(() => {
     setErrorMessage('');
@@ -12,15 +13,13 @@ export default function AddPlacePopup({ isOpen, onClose, onAddPlace }) {
   }, [isOpen]);
 
     const onSubmit = (data) => {
-      // console.log(JSON.stringify(data));
       onAddPlace( data );
       reset();      
   };
 
   const handleChange = (e) => {
     setErrorMessage(e.target.validationMessage);
-    // console.log(isValid);
-    console.log(isValidating);
+    setUrlValid(e.target.validity.valid);
   };
 
 
@@ -33,6 +32,7 @@ export default function AddPlacePopup({ isOpen, onClose, onAddPlace }) {
       onClose={onClose}
       onSubmit={handleSubmit(onSubmit)}
       isValid={isValid}
+      urlValid={urlValid}
     >
       <fieldset className="popup__field">
         <input

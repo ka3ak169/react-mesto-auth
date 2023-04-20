@@ -10,7 +10,7 @@ export default function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar }) {
     if(values) {
       reset();
     }    
-  }, [isOpen])
+  }, [isOpen, reset])
 
   function handleSubmit(e) {
     e.preventDefault();

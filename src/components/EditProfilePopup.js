@@ -1,33 +1,36 @@
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
-import React, { useState, useContext, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import PopupWithForm from "./PopupWithForm";
+import { useFormValidation } from "../utils/useFormValidation";
+
 
 function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
   const currentUser = useContext(CurrentUserContext);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+  const { values, errors, isValid, reset, handleChange, setValue, setIsValid } = useFormValidation();
+
 
   useEffect(() => {
-    setName(currentUser.name);
-    setDescription(currentUser.about);
-    
-  }, [currentUser, isOpen]);
-
-  const handleChange = (e) => {
-    const inputName = e.target.name;
-    if (inputName === "name") {
-      setName(e.target.value);
-    }
-    if (inputName === "about") {
-      setDescription(e.target.value);
-    }
-  };
+    if (currentUser) {
+      setValue('name', currentUser.name);
+      setValue('about', currentUser.about);
+      if (currentUser.name && currentUser.about) {
+        setIsValid(true);
+      }
+    }    
+  }, [currentUser, isOpen, setValue, setIsValid]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    onUpdateUser({ name, about: description });
+    onUpdateUser({ name: values["name"], about: values["about"] });
   };
+
+  const onClosePopup = () => {
+    onClose();
+    if (currentUser) {
+      reset({'name': currentUser.name, 'about': currentUser.about});
+    }
+  }
 
   return (
     <PopupWithForm
@@ -35,8 +38,9 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
       text={`Редактировать профиль`}
       btnText={`Сохранить`}
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={onClosePopup}
       onSubmit={handleSubmit}
+      isValid={isValid}
     >
       <fieldset className="popup__field">
         <input
@@ -47,11 +51,11 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
           placeholder="Имя"
           minLength="2"
           maxLength="40"
-          value={name ?? ""}
+          value={ values['name'] ?? ""}
           onChange={handleChange}
           required
         />
-        <span className="error profile-name-input-error"></span>
+        <span className="error profile-name-input-error">{errors['name']}</span>
         <input
           className="popup__form-input profile-popup-activity"
           id="profile-activity-input"
@@ -60,11 +64,11 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
           placeholder="Вид деятельности"
           minLength="2"
           maxLength="200"
-          value={description ?? ""}
+          value={values['about'] ?? ""}
           onChange={handleChange}
           required
         />
-        <span className="error profile-activity-input-error"></span>
+        <span className="error profile-activity-input-error">{errors['about']}</span>
       </fieldset>
     </PopupWithForm>
   );
